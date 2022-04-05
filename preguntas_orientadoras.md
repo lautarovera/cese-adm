@@ -25,3 +25,13 @@ Como se ha mencionado, esto tiene varios beneficios:
     - El *stack* de cada tarea no necesita incluir espacio para ISR, ya que éste se localiza únicamente en el *main stack*.
     - Facilita el desarrollo de un OS eficiente para procesadores Cortex-M.
     - Si existe soporte de MPU, éste se puede utilizar para disparar una *MemManage fault exception* cuando exista un *stack overflow* para evitar que una tarea escriba fuera del espacio de memoria inicialmente dedicado.
+6. Los Cortex-M3 y Cortex-M4 poseen dos **estados de operación**:
+    - **Debug state**: Cuando el procesador está detenido (*halted*), entra en *debug state* y detiene la ejecución de instrucciones.
+    - **Thumb state**: Cuando el procesador está corriendo código de programa (instrucciones *Thumb*), se encuentra en *Thumb state*.
+A su vez, soportan dos **niveles de acceso**:
+    - **Privileged**: Por defecto, los procesadores empiezan en modo privilegiado.
+    - **Unprivileged**: Cuando se utiliza un OS, la ejecución de las tareas de usuarios pueden ser llevadas a cabo en modo no privilegiado, forzando ciertas restricciones como el acceso a algunos registros del NVIC. Otro ejemplo es su uso con la MPU, para prevenir que tareas no privilegiadas accedan a ciertas regiones de memorias, y así evitar que corrompan areas de memoria utilizadas por el kernel del OS.
+Finalmente, los Cortex-M3 y M4 poseen dos **modos de operación**:
+    - **Handler mode**: Cuando se está ejecutando una *exception handler* (e.g. una ISR). En este modo, el procesador tiene siempre el nivel de acceso *privilegiado*.
+    - **Thread mode**: Cuando se está ejecutando código de aplicación. En este modo, el procesador puede estar tanto con nivel de acceso *privilegiado* como *no privilegiado*. El nivel de acceso es controlado por un registro especial llamado *CONTROL*.
+Estando en *privileged Thread mode*, el software puede conmutar hacia *unprivileged Thread mode*, pero luego no puede conmutar nuevamente hacia *privileged*. Si esto es necesario, la conmutación nuevamente hacia *privileged* debe hacerse usando una excepción (e.g. una ISR).
