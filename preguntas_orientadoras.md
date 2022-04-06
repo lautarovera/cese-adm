@@ -56,4 +56,22 @@ Los Cortex-M utilizan un modelo de pila llamado *full-descending stack*. Cuando 
 Para cada instrucción PUSH, el procesador primero decrementa el SP y luego almacena el valor en la dirección de memoria apuntada por el SP. Durante las operaciones, el SP apunta a la posición de memoria donde el último dato fue "empujado" (*pushed*) hacia la pila.
 Para cada instrucción POP, se lee el valor de la posición de memoria apuntada por el SP y luego el valor del SP se incrementa automáticamente.
 El uso más común de las instrucciones PUSH y POP es el de almacenar el contenido del banco de registros del procesador cuando se llama a una función o subrutina. Al inicio de la llamada el contenido de algunos registros se guardan en la pila mediante PUSH, y luego cuando finaliza la llamada se restauran dichos registros a sus valores originales mediante POP.
-
+11. Luego del reset y antes de que el procesador comience con la ejecución del programa, los procesadores Cortex-M lees las dos primeras palabras (una palabra son 2 bytes, por lo tanto dos palabras son 4 bytes o 32 bits) de la memoria. El principio del espacio de la memoria contiene la tabla de vectores o *vector table*, y las dos primeras palabras de dicha tabla corresponden al valor inicial del MSP y al vector de reset (*reset vector*), el cual es la dirección de inicio del *reset handler*. Luego de que estas dos palabras son leídas, entonces el procesador configura el MSP y el PC con dichos valores. El "seteo" del MSP es necesario porque algunas excepciones como NMI o HardFault pueden ocurrir justo luego del reset. La mayoría de los códigos de startup en los entornos de desarrollo en C también actualizan el valor del MSP antes de entrar en el programa principal *main()*. Esta inicialización de la pila en dos pasos permite a un microcontrolador con memoria externa usar dicha memoria externa para la pila.
+12. Los llamados "core peripherals" son aquellos componentes que hacen al procesador pero que no son el núcleo del mismo, sino que le brindan soporte para cumplir con la funcionalidad del procesador. Algunos de ellos son:
+    - NVIC (*Nested Vector Interrupt Controller*).
+    - Memoria SRAM (*Static Random Access Memory*).
+    - Memoria flash.
+    - *SysTick timer*.
+    - TPU (Tighly Coupled Memory) en M1 y M7.
+    - MPU (Memory Protection Unit) en M0+, M3, M4 y M7.
+    - Banco de registros (*Register Bank*).
+    - SCB (*System Control Block*).
+La diferencia entre estos y otros periféricos es los *core peripherals* corresponden a los periféricos del procesador, mientras que los periféricos corresponden de manera genérica a los periféricos de los microcontroladores, como por ejemplo una UART, un I2C, un SPI, los GPIO del microcontrolador y cualquier componente externo al procesador.
+13. Los Cortex-M3 y Cortex-M4 tienen un controlador de interrupciones configurable que puede soportar hasta 240 interrupciones vectorizadas y niveles de prioridades comenzando con 8 hasta 256. La asignación de las prioridades sirven para reducir el tiempo de respuesta de la aplicación. Por ejemplo, periféricos que son críticos pueden tener asignado interrupciones con alta prioridad, entonces si la interrupción se dispara cuando el procesador está atendiendo otra interrupción de menor prioridad, dicha interrupción de menor prioridad es suspendida, permitiendo a la interrupción de mayor prioridad ser atendida inmediatamente.
+La configuración de estas prioridades se logra programando el NVIC, activando la interrupción y asignandole un nivel de prioridad. Los registros del NVIC están mapeados en memoria y su localización es fija y su modelo es consistente entre todos los Cortex-M. La manera estándar de acceder a ellos es a través de las definiciones y las APIs de la librería CMSIS-Core.
+14. CMSIS (Cortex Microcontroller Software Interface Standard) es un estándar desarrollado por ARM para permitir a los fabricantes de microncontroladores y desarrolladores de software usar una infraestructura de software consistente para desarrollar soluciones en los microcontroladores Cortex-M.
+Existen numerosos fabricantes de microntroladores, FPGAs, ASICs, depuradores, compiladores, sistemas operativos y middlewares y la función de CMSIS es proveer a todos ellos un estándar en común sobre el cual basar sus desarrollos y así asegurar la interoperabilidad entre ellos.
+Su proveedor es ARM y algunas de las ventajas que aporta son:
+    - Reutilización del software.
+    - Compatibilidad del software.
+    - Independencia del *toolchain*.
