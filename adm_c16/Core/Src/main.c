@@ -18,11 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "string.h"
+#include <string.h>
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "asm_func.h"
+#include "c_func.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +64,8 @@ static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
+
+char buffer [50u];
 
 /* USER CODE END PFP */
 
@@ -160,6 +164,12 @@ int main(void)
   const uint32_t Resultado = asm_sum (5, 3);
   /* USER CODE END 2 */
 
+  sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
+  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10 );
+
+  zeros((uint32_t *)buffer, (uint32_t) strlen((char *)buffer));
+
+  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10 );
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)

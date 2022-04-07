@@ -144,20 +144,7 @@ void UsageFault_Handler(void)
 void SVC_Handler(void)
 {
   /* USER CODE BEGIN SVCall_IRQn 0 */
-	// Handler de la interrupcion "SVC" (Supervisor Call).
-	// Usado por el ejemplo "PrivilegiosSVC".
 
-    // Se obtiene el valor del registro "control". El bit 0 indica el nivel
-    // de privilegio en modo "Thread". Deberia ser 1: No privilegiado.
-    uint32_t x = __get_CONTROL ();
-
-    // Borra el bit 0. Nuevo valor 0: privilegiado.
-    x &= ~1u;
-
-    // Asigna el nuevo valor al registro "control". Esta operacion deberia
-    // ejecutarse ya que todo manejador de interrupciones se ejecuta en modo
-    // "Handler" con total privilegio.
-    __set_CONTROL (x);
   /* USER CODE END SVCall_IRQn 0 */
   /* USER CODE BEGIN SVCall_IRQn 1 */
 
