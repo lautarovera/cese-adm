@@ -68,9 +68,13 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 
 char buffer[25u];
 
-uint32_t buffer_in[LENGTH_BUFFER] = {5u, 3u, 16u, 256u, 65536u};
+uint32_t buffer_in_32[LENGTH_BUFFER] = {5u, 3u, 16u, 255u, 65535u};
 
-uint32_t buffer_out[LENGTH_BUFFER] = {0u, 0u, 0u ,0u ,0u};
+uint32_t buffer_out_32[LENGTH_BUFFER] = {0u, 0u, 0u ,0u ,0u};
+
+uint16_t buffer_in_16[LENGTH_BUFFER] = {5u, 3u, 16u, 255u, 65535u};
+
+uint16_t buffer_out_16[LENGTH_BUFFER] = {0u, 0u, 0u ,0u ,0u};
 
 /* USER CODE END PFP */
 
@@ -174,11 +178,11 @@ int main(void)
 
   zeros((uint32_t *)buffer, LENGTH_BUFFER);
 
-  productoEscalar32(buffer_in, buffer_out, (uint32_t)LENGTH_BUFFER, 5u);
+  productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER, 5u);
 
-  productoEscalar16((uint16_t *)buffer_in, (uint16_t *)buffer_out, (uint16_t)LENGTH_BUFFER, 2u);
+  productoEscalar16(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER, 2u);
 
-  productoEscalar12((uint16_t *)buffer_in, (uint16_t *)buffer_out, (uint16_t)LENGTH_BUFFER, 1024u);
+  productoEscalar12(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER, 1024u);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
