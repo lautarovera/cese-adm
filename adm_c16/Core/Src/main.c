@@ -34,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LENGTH_BUFFER	5u
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -67,7 +68,9 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 
 char buffer[25u];
 
-char buffer_out[25u];
+uint32_t buffer_in[LENGTH_BUFFER] = {5u, 3u, 16u, 256u, 65536u};
+
+uint32_t buffer_out[LENGTH_BUFFER] = {0u, 0u, 0u ,0u ,0u};
 
 /* USER CODE END PFP */
 
@@ -169,15 +172,13 @@ int main(void)
   sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
   HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
 
-  zeros((uint32_t *)buffer, (uint32_t) strlen((char *)buffer));
+  zeros((uint32_t *)buffer, LENGTH_BUFFER);
 
-  memset(buffer, 5u, 25u);
+  productoEscalar32(buffer_in, buffer_out, (uint32_t)LENGTH_BUFFER, 5u);
 
-  memset(buffer_out, 0u, 25u);
+  productoEscalar16((uint16_t *)buffer_in, (uint16_t *)buffer_out, (uint16_t)LENGTH_BUFFER, 2u);
 
-  productoEscalar32((uint32_t *)buffer, (uint32_t *)buffer_out, strlen((char *)buffer), 5u);
-
-  productoEscalar16((uint16_t *)buffer, (uint16_t *)buffer_out, strlen((char *)buffer), 2u);
+  productoEscalar12((uint16_t *)buffer_in, (uint16_t *)buffer_out, (uint16_t)LENGTH_BUFFER, 1024u);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

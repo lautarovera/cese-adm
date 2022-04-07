@@ -14,7 +14,6 @@
 
 /**
  * @brief Función que inicializa un vector con ceros.
- * Se podría implementar directamente con memset(vector, 0, longitud).
  * @param[in] vector   : Vector a inicializar con ceros.
  * @param[in] longitud : Longitud del vector a inicializar con ceros.
  */
@@ -37,5 +36,15 @@ void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitu
  * @param[in]  escalar   : Escalar como operando del producto
  */
 void productoEscalar16(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
+
+/**
+ * @brief Función que realiza el producto de un vector de 16 bits por un escalar de 16 bits,
+ * pero saturando el resultado a 12 bits.
+ * @param[in]  vectorIn  : Vector de entrada como operando del producto.
+ * @param[out] vectorOut : Vector resultado del producto saturado a 12 bits.
+ * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
+ * @param[in]  escalar   : Escalar como operando del producto
+ */
+void productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
 
 #endif /* C_FUNC_H_ */
