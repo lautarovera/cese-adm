@@ -29,9 +29,6 @@
 
 /* Functions definitions -----------------------------------------------------*/
 
-/* Función que inicializa un vector con ceros.
- * Se podría implementar directamente con memset(vector, 0, longitud).
- */
 void zeros(uint32_t *vector, uint32_t longitud)
 {
 	for (;vector < (&vector[0u] + longitud); vector++) {
@@ -39,4 +36,13 @@ void zeros(uint32_t *vector, uint32_t longitud)
 	}
 }
 
+void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar)
+{
+	uint32_t tmp = 0u;
+
+	for (;vectorIn < (&vectorIn[0u] + longitud); vectorIn++) {
+		tmp = *vectorIn * escalar;
+		*vectorOut++ = tmp;
+	}
+}
 

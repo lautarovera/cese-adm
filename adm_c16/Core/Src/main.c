@@ -65,7 +65,9 @@ static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
-char buffer [50u];
+char buffer[25u];
+
+char buffer_out[25u];
 
 /* USER CODE END PFP */
 
@@ -151,7 +153,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+  /* USER CODE END SysInit */HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -165,11 +167,16 @@ int main(void)
   /* USER CODE END 2 */
 
   sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
-  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10 );
+  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
 
   zeros((uint32_t *)buffer, (uint32_t) strlen((char *)buffer));
 
-  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10 );
+  memset(buffer, 5u, 25u);
+
+  memset(buffer_out, 0u, 25u);
+
+  productoEscalar32((uint32_t *)buffer, (uint32_t *)buffer_out, strlen((char *)buffer), 5u);
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
