@@ -21,12 +21,21 @@
 void zeros(uint32_t *vector, uint32_t longitud);
 
 /**
- * @brief Función que realiza el producto de un vector por un escalar.
+ * @brief Función que realiza el producto de un vector de 32 bits por un escalar de 32 bits.
  * @param[in]  vectorIn  : Vector de entrada como operando del producto.
  * @param[out] vectorOut : Vector resultado del producto.
  * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
  * @param[in]  escalar   : Escalar como operando del producto
  */
 void productoEscalar32(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar);
+
+/**
+ * @brief Función que realiza el producto de un vector de 16 bits por un escalar de 16 bits.
+ * @param[in]  vectorIn  : Vector de entrada como operando del producto.
+ * @param[out] vectorOut : Vector resultado del producto.
+ * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
+ * @param[in]  escalar   : Escalar como operando del producto
+ */
+void productoEscalar16(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
 
 #endif /* C_FUNC_H_ */

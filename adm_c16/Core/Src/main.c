@@ -177,6 +177,8 @@ int main(void)
 
   productoEscalar32((uint32_t *)buffer, (uint32_t *)buffer_out, strlen((char *)buffer), 5u);
 
+  productoEscalar16((uint16_t *)buffer, (uint16_t *)buffer_out, strlen((char *)buffer), 2u);
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
