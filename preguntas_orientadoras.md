@@ -76,3 +76,17 @@ Su proveedor es ARM y algunas de las ventajas que aporta son:
     - Reutilización del software.
     - Compatibilidad del software.
     - Independencia del *toolchain*.
+15. Una interrupción es un tipo de excepción del microcontrolador, y por lo tanto sigue las mismas secuencias de las excepciones:
+    - Secuencia de entrada:
+        + Se ejecuta un *push* de los registros del microcontrolador, incluso la dirección apuntada por el *stack pointer* (PSP o MSP) antes de que ocurra la excepción.
+        + Se ejecuta un *fetch* del vector de excepción (en el caso de interrupciones, corresponde a la dirección de inicio de la ISR).
+        + Una vez determinada la dirección de inicio de la ISR, se ejecuta un *fetch* de las instrucciones de la ISR.
+        + Se actualizan los registros del NVIC y del *Core*, como el PSR (*Program Status Register*), el LR (*Link Register*), el PC (*Program Counter*) y el SP (*Stack Pointer*). Según qué *stack* se estaba usando, el SP se ajustará al PSP o al MSP. El PC se ajusta al valor de inicio de la ISR. El LR se ajusta con un valor especial llamado *EXC_RETURN*, el cual es un valor de 32 bits cuyos 27 MSB se ajustan a 1 y los 5 LSB contienen información acerca de la secuencia de la excepción (por ejemplo, qué *stack* se usó para hacer *push* de los registros del procesador).
+    - Ejecución de la ISR/*exception handler* de la excepción:
+        + El procesador ha entrado a modo *Handler*, en el cual el SP es el MSP y el nivel de acceso es privilegiado.
+        + En esta etapa pueden llegar otras interrupciones/excepciones de mayor o menor prioridad. Si la nueva interrupción es de menor prioridad quedará en el estado *pending* y será atendida cuando la ISR actual termine. En caso de ser una interrupción/excepción de mayor prioridad, ésta será aceptada, la ISR actual suspendida y la ISR/*exception handler* de mayor prioridad ejecutada.
+        + Al final de la ejecución de la ISR, el PC se carga con el valor del LR (*EXC_RETURN*), disparando el mecanismo de retorno.
+    - Secuencia de retorno:
+        + Se ejecuta un *pop* de los valores de los registros previamente apilados durante la secuencia de entrada y se restauran nuevamente al banco de registros.
+        + Se actualizan los registros del NVIC y del *Core*.
+        + Se comienza a hacer *fetch* de las instrucciones del programa previamente interrumpido.
