@@ -194,6 +194,7 @@ int main(void)
   asm_zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
   asm_productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER_IN_OUT, 5u);
   asm_productoEscalar16(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 2u);
+  asm_productoEscalar12(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 1500u);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

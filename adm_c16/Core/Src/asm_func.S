@@ -107,3 +107,28 @@
     	subs r2, 1
     	bne .asm_productoEscalar16_loop
     	bx lr
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
+@
+@ Parametros recibidos:
+@   r0: vectorIn
+@	r1: vectorOut
+@   r2: longitud
+@	r3: escalar
+@
+.thumb_func
+    asm_productoEscalar12:
+    	mov r4, 0
+    	mov r5, 0
+    	mov r6, 0xFFF
+    .asm_productoEscalar12_loop:
+    	ldrh r4, [r0], 2
+    	ldrh r5, [r1]
+    	mul r5, r4, r3
+    	and r5, r5, r6
+    	strh r5, [r1], 2
+    	subs r2, 1
+    	bne .asm_productoEscalar12_loop
+    	bx lr
