@@ -97,8 +97,13 @@
 @
 .thumb_func
     asm_productoEscalar16:
+    	mov r4, 0
+    	mov r5, 0
     .asm_productoEscalar16_loop:
-    	mul r1, r0, r3
+    	ldrh r4, [r0], 2
+    	ldrh r5, [r1]
+    	mul r5, r4, r3
+    	strh r5, [r1], 2
     	subs r2, 1
     	bne .asm_productoEscalar16_loop
     	bx lr

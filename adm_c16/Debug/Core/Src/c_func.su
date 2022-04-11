@@ -1,5 +1,6 @@
 ../Core/Src/c_func.c:32:6:asignarEscalar32	24	static
-../Core/Src/c_func.c:39:6:zeros	16	static
-../Core/Src/c_func.c:46:6:productoEscalar32	24	static
-../Core/Src/c_func.c:53:6:productoEscalar16	24	static
-../Core/Src/c_func.c:60:6:productoEscalar12	24	static
+../Core/Src/c_func.c:39:6:asignarEscalar16	16	static
+../Core/Src/c_func.c:46:6:zeros	16	static
+../Core/Src/c_func.c:53:6:productoEscalar32	24	static
+../Core/Src/c_func.c:60:6:productoEscalar16	24	static
+../Core/Src/c_func.c:67:6:productoEscalar12	24	static

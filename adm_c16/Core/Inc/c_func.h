@@ -13,12 +13,20 @@
 /* Functions prototypes -----------------------------------------------------*/
 
 /**
- * @brief Función que inicializa un vector con un valor escalar.
+ * @brief Función que inicializa un vector con un valor escalar de 32 bits.
  * @param[in] vector   : Vector a inicializar con ceros.
  * @param[in] longitud : Longitud del vector a inicializar con ceros.
  * @param[in] escalar  : Escalar de inicialización.
  */
 void asignarEscalar32(uint32_t *vector, uint32_t longitud, uint32_t escalar);
+
+/**
+ * @brief Función que inicializa un vector con un valor escalar de 16 bits.
+ * @param[in] vector   : Vector a inicializar con ceros.
+ * @param[in] longitud : Longitud del vector a inicializar con ceros.
+ * @param[in] escalar  : Escalar de inicialización.
+ */
+void asignarEscalar16(uint16_t *vector, uint16_t longitud, uint16_t escalar);
 
 /**
  * @brief Función que inicializa un vector con ceros.

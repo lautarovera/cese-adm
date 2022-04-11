@@ -36,6 +36,13 @@ void asignarEscalar32(uint32_t *vector, uint32_t longitud, uint32_t escalar)
 	}
 }
 
+void asignarEscalar16(uint16_t *vector, uint16_t longitud, uint16_t escalar)
+{
+	while (longitud--) {
+		*vector++ = escalar;
+	}
+}
+
 void zeros(uint32_t *vector, uint32_t longitud)
 {
 	while (longitud--) {

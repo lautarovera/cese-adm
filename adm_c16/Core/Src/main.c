@@ -180,11 +180,8 @@ int main(void)
   HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
 
   zeros(buffer_zeros, (uint32_t)LENGTH_BUFFER_IN_OUT);
-
   productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER_IN_OUT, 5u);
-
   productoEscalar16(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER_IN_OUT, 2u);
-
   productoEscalar12(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER_IN_OUT, 1024u);
 
   sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
@@ -192,10 +189,11 @@ int main(void)
 
   asignarEscalar32(buffer_zeros, (uint32_t)LENGTH_BUFFER_IN_OUT, (uint32_t)0xFFFFFFFF);
   asignarEscalar32(buffer_in_32, (uint32_t)LENGTH_BUFFER_IN_OUT, (uint32_t)5u);
+  asignarEscalar16(buffer_in_16, (uint16_t)LENGTH_BUFFER_IN_OUT, (uint16_t)3u);
 
   asm_zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
-
   asm_productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER_IN_OUT, 5u);
+  asm_productoEscalar16(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 2u);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
