@@ -75,14 +75,14 @@
 @
 .thumb_func
     asm_productoEscalar32:
-    	mov r4, 0
-    	mov r5, 0
+    	push {r4,r5}
     .asm_productoEscalar32_loop:
     	ldr r4, [r0], 4
     	mul r5, r4, r3
     	str r5, [r1], 4
     	subs r2, 1
     	bne .asm_productoEscalar32_loop
+    	pop {r4,r5}
     	bx lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -97,8 +97,7 @@
 @
 .thumb_func
     asm_productoEscalar16:
-    	mov r4, 0
-    	mov r5, 0
+    	push {r4,r5}
     .asm_productoEscalar16_loop:
     	ldrh r4, [r0], 2
     	ldrh r5, [r1]
@@ -106,6 +105,7 @@
     	strh r5, [r1], 2
     	subs r2, 1
     	bne .asm_productoEscalar16_loop
+    	pop {r4,r5}
     	bx lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -120,8 +120,7 @@
 @
 .thumb_func
     asm_productoEscalar12:
-    	mov r4, 0
-    	mov r5, 0
+    	push {r4-r6}
     	mov r6, 0xFFF
     .asm_productoEscalar12_loop:
     	ldrh r4, [r0], 2
@@ -131,4 +130,5 @@
     	strh r5, [r1], 2
     	subs r2, 1
     	bne .asm_productoEscalar12_loop
+    	pop {r4-r6}
     	bx lr

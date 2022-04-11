@@ -113,3 +113,5 @@ EL mismo PCS aplica para operaciones con FPU, donde:
     - S0-S15 son los *caller saved registers*.
     - S16-S31 son los  *callee saved registers*.
 Estos registros se encuentran dentro de la FPU, y no del Core del procesador (ARM Cortex-M4).
+17. **Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.**
+

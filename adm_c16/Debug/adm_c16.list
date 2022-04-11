@@ -29,11 +29,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  000200a4  2**0
                   CONTENTS, READONLY
- 13 .debug_line   0000cd2d  00000000  00000000  000200d4  2**0
+ 13 .debug_line   0000cd2c  00000000  00000000  000200d4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_info   0000eff7  00000000  00000000  0002ce01  2**0
+ 14 .debug_info   0000eff7  00000000  00000000  0002ce00  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_abbrev 00001d67  00000000  00000000  0003bdf8  2**0
+ 15 .debug_abbrev 00001d67  00000000  00000000  0003bdf7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_aranges 00000ba0  00000000  00000000  0003db60  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -126,94 +126,94 @@ Disassembly of section .text:
 @
 .thumb_func
     asm_productoEscalar32:
-    	mov r4, 0
- 8000206:	f04f 0400 	mov.w	r4, #0
-    	mov r5, 0
- 800020a:	f04f 0500 	mov.w	r5, #0
+    	push {r4,r5}
+ 8000206:	b430      	push	{r4, r5}
 
-0800020e <.asm_productoEscalar32_loop>:
+08000208 <.asm_productoEscalar32_loop>:
     .asm_productoEscalar32_loop:
     	ldr r4, [r0], 4
- 800020e:	f850 4b04 	ldr.w	r4, [r0], #4
+ 8000208:	f850 4b04 	ldr.w	r4, [r0], #4
     	mul r5, r4, r3
- 8000212:	fb04 f503 	mul.w	r5, r4, r3
+ 800020c:	fb04 f503 	mul.w	r5, r4, r3
     	str r5, [r1], 4
- 8000216:	f841 5b04 	str.w	r5, [r1], #4
+ 8000210:	f841 5b04 	str.w	r5, [r1], #4
     	subs r2, 1
- 800021a:	3a01      	subs	r2, #1
+ 8000214:	3a01      	subs	r2, #1
     	bne .asm_productoEscalar32_loop
- 800021c:	d1f7      	bne.n	800020e <.asm_productoEscalar32_loop>
+ 8000216:	d1f7      	bne.n	8000208 <.asm_productoEscalar32_loop>
+    	pop {r4,r5}
+ 8000218:	bc30      	pop	{r4, r5}
     	bx lr
- 800021e:	4770      	bx	lr
+ 800021a:	4770      	bx	lr
 
-08000220 <asm_productoEscalar16>:
+0800021c <asm_productoEscalar16>:
 @   r2: longitud
 @	r3: escalar
 @
 .thumb_func
     asm_productoEscalar16:
-    	mov r4, 0
- 8000220:	f04f 0400 	mov.w	r4, #0
-    	mov r5, 0
- 8000224:	f04f 0500 	mov.w	r5, #0
+    	push {r4,r5}
+ 800021c:	b430      	push	{r4, r5}
 
-08000228 <.asm_productoEscalar16_loop>:
+0800021e <.asm_productoEscalar16_loop>:
     .asm_productoEscalar16_loop:
     	ldrh r4, [r0], 2
- 8000228:	f830 4b02 	ldrh.w	r4, [r0], #2
+ 800021e:	f830 4b02 	ldrh.w	r4, [r0], #2
     	ldrh r5, [r1]
- 800022c:	880d      	ldrh	r5, [r1, #0]
+ 8000222:	880d      	ldrh	r5, [r1, #0]
     	mul r5, r4, r3
- 800022e:	fb04 f503 	mul.w	r5, r4, r3
+ 8000224:	fb04 f503 	mul.w	r5, r4, r3
     	strh r5, [r1], 2
- 8000232:	f821 5b02 	strh.w	r5, [r1], #2
+ 8000228:	f821 5b02 	strh.w	r5, [r1], #2
     	subs r2, 1
- 8000236:	3a01      	subs	r2, #1
+ 800022c:	3a01      	subs	r2, #1
     	bne .asm_productoEscalar16_loop
- 8000238:	d1f6      	bne.n	8000228 <.asm_productoEscalar16_loop>
+ 800022e:	d1f6      	bne.n	800021e <.asm_productoEscalar16_loop>
+@    	pop {r4,r5}
     	bx lr
- 800023a:	4770      	bx	lr
+ 8000230:	4770      	bx	lr
 
-0800023c <asm_productoEscalar12>:
+08000232 <asm_productoEscalar12>:
 @   r2: longitud
 @	r3: escalar
 @
 .thumb_func
     asm_productoEscalar12:
-    	mov r4, 0
- 800023c:	f04f 0400 	mov.w	r4, #0
-    	mov r5, 0
- 8000240:	f04f 0500 	mov.w	r5, #0
+    	push {r4-r6}
+ 8000232:	b470      	push	{r4, r5, r6}
     	mov r6, 0xFFF
- 8000244:	f640 76ff 	movw	r6, #4095	; 0xfff
+ 8000234:	f640 76ff 	movw	r6, #4095	; 0xfff
 
-08000248 <.asm_productoEscalar12_loop>:
+08000238 <.asm_productoEscalar12_loop>:
     .asm_productoEscalar12_loop:
     	ldrh r4, [r0], 2
- 8000248:	f830 4b02 	ldrh.w	r4, [r0], #2
+ 8000238:	f830 4b02 	ldrh.w	r4, [r0], #2
     	ldrh r5, [r1]
- 800024c:	880d      	ldrh	r5, [r1, #0]
+ 800023c:	880d      	ldrh	r5, [r1, #0]
     	mul r5, r4, r3
- 800024e:	fb04 f503 	mul.w	r5, r4, r3
+ 800023e:	fb04 f503 	mul.w	r5, r4, r3
     	and r5, r5, r6
- 8000252:	ea05 0506 	and.w	r5, r5, r6
+ 8000242:	ea05 0506 	and.w	r5, r5, r6
     	strh r5, [r1], 2
- 8000256:	f821 5b02 	strh.w	r5, [r1], #2
+ 8000246:	f821 5b02 	strh.w	r5, [r1], #2
     	subs r2, 1
- 800025a:	3a01      	subs	r2, #1
+ 800024a:	3a01      	subs	r2, #1
     	bne .asm_productoEscalar12_loop
- 800025c:	d1f4      	bne.n	8000248 <.asm_productoEscalar12_loop>
+ 800024c:	d1f4      	bne.n	8000238 <.asm_productoEscalar12_loop>
+    	pop {r4-r6}
+ 800024e:	bc70      	pop	{r4, r5, r6}
     	bx lr
- 800025e:	4770      	bx	lr
+ 8000250:	4770      	bx	lr
 
-08000260 <strlen>:
- 8000260:	4603      	mov	r3, r0
- 8000262:	f813 2b01 	ldrb.w	r2, [r3], #1
- 8000266:	2a00      	cmp	r2, #0
- 8000268:	d1fb      	bne.n	8000262 <strlen+0x2>
- 800026a:	1a18      	subs	r0, r3, r0
- 800026c:	3801      	subs	r0, #1
- 800026e:	4770      	bx	lr
+08000252 <strlen>:
+ 8000252:	4603      	mov	r3, r0
+ 8000254:	f813 2b01 	ldrb.w	r2, [r3], #1
+ 8000258:	2a00      	cmp	r2, #0
+ 800025a:	d1fb      	bne.n	8000254 <strlen+0x2>
+ 800025c:	1a18      	subs	r0, r3, r0
+ 800025e:	3801      	subs	r0, #1
+ 8000260:	4770      	bx	lr
+	...
 
 08000270 <memchr>:
  8000270:	f001 01ff 	and.w	r1, r1, #255	; 0xff
@@ -921,7 +921,7 @@ int main(void)
 
   /* USER CODE END SysInit */HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
  80007ea:	483b      	ldr	r0, [pc, #236]	; (80008d8 <main+0xfc>)
- 80007ec:	f7ff fd38 	bl	8000260 <strlen>
+ 80007ec:	f7ff fd31 	bl	8000252 <strlen>
  80007f0:	4603      	mov	r3, r0
  80007f2:	b29a      	uxth	r2, r3
  80007f4:	230a      	movs	r3, #10
@@ -956,7 +956,7 @@ int main(void)
  8000822:	f002 ff5b 	bl	80036dc <siprintf>
   HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
  8000826:	482c      	ldr	r0, [pc, #176]	; (80008d8 <main+0xfc>)
- 8000828:	f7ff fd1a 	bl	8000260 <strlen>
+ 8000828:	f7ff fd13 	bl	8000252 <strlen>
  800082c:	4603      	mov	r3, r0
  800082e:	b29a      	uxth	r2, r3
  8000830:	230a      	movs	r3, #10
@@ -994,7 +994,7 @@ int main(void)
  800086e:	f002 ff35 	bl	80036dc <siprintf>
   HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
  8000872:	4819      	ldr	r0, [pc, #100]	; (80008d8 <main+0xfc>)
- 8000874:	f7ff fcf4 	bl	8000260 <strlen>
+ 8000874:	f7ff fced 	bl	8000252 <strlen>
  8000878:	4603      	mov	r3, r0
  800087a:	b29a      	uxth	r2, r3
  800087c:	230a      	movs	r3, #10
@@ -1033,13 +1033,13 @@ int main(void)
  80008bc:	2205      	movs	r2, #5
  80008be:	490c      	ldr	r1, [pc, #48]	; (80008f0 <main+0x114>)
  80008c0:	480c      	ldr	r0, [pc, #48]	; (80008f4 <main+0x118>)
- 80008c2:	f7ff fcad 	bl	8000220 <asm_productoEscalar16>
+ 80008c2:	f7ff fcab 	bl	800021c <asm_productoEscalar16>
   asm_productoEscalar12(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 1500u);
  80008c6:	f240 53dc 	movw	r3, #1500	; 0x5dc
  80008ca:	2205      	movs	r2, #5
  80008cc:	4908      	ldr	r1, [pc, #32]	; (80008f0 <main+0x114>)
  80008ce:	4809      	ldr	r0, [pc, #36]	; (80008f4 <main+0x118>)
- 80008d0:	f7ff fcb4 	bl	800023c <asm_productoEscalar12>
+ 80008d0:	f7ff fcaf 	bl	8000232 <asm_productoEscalar12>
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
