@@ -1,4 +1,4 @@
 ../Core/Src/c_func.c:32:6:zeros	16	static
-../Core/Src/c_func.c:40:6:productoEscalar32	32	static
-../Core/Src/c_func.c:50:6:productoEscalar16	32	static
-../Core/Src/c_func.c:60:6:productoEscalar12	32	static
+../Core/Src/c_func.c:43:6:productoEscalar32	24	static
+../Core/Src/c_func.c:57:6:productoEscalar16	24	static
+../Core/Src/c_func.c:71:6:productoEscalar12	24	static
