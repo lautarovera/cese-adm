@@ -137,6 +137,11 @@ La portabilidad de dichos sistemas operativos embebidos se ve favorecida por el 
 # ISA
 -----
 ## 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo.
+Los sufijos pueden entenderse como un modificador para algunas instrucciones. Como su nombre lo indica, se colocan inmediatamente al final del mnemónico.  
+Existen tres tipos principales de sufijos:  
++ **Sufijo S**: Las instrucciones de procesamiento de datos pueden opcionalmente actualizar las banderas del registro APSR. Un ejemplo, en la sintáxis del UAL, sería: MOVS R0, R1 (mueve R1 a R0 y actualiza el APSR).
++ **Sufijos de ejecución condicional**: Se utilizan para controlar el flujo del programa mediante saltos condicionales. Algunos ejemplos comunes de estos sufijos son EQ (*equal*), NE (*not equal*), LT (*less than*), GT (*greater than*), entre otros. Un ejemplo en UAL sería: BEQ label (salta hacia la etiqueta "label" si la instrucción anterior resulta igual o no).
++ **Sufijos de precisión**: Se utilizan en las instruciones de procesamiento de datos para indicar cuantos bits de precisión se deben utilizar en la operación. Algunos ejemplos son .N (de *narrow*, 16 bits) y .W (*wide*, 32 bits). En *assembly* de Cortex-M, existen 3 tipos de datos, *byte* (8 bits), *halfword* (16 bits) y *word* (32 bits). El sufijo H es un "alias" del sufijo .N. Un ejemplo de utilización del sufijo en UAL sería: LDRH R4,R3 (cargar media palabra, 16 bits, del registro R3 en el registro R4.
 ## 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo.
 ## 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
 ## 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
