@@ -126,3 +126,18 @@ Estos registros se encuentran dentro de la FPU, y no del Core del procesador (AR
 ## 17. Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.
 + **Tail chaining:** Cuando ocurre una excepción/interrupción y el procesador está atendiendo otra excepción de igual o mayor prioridad, dicha excepción/interrupción entrará en el estado *pending*. Cuando el procesador termina la ejecución del manejador de la excepción/interrupción (*exception handler* o ISR) que tenía lugar, puede continuar con el procesamiento de la excepción/interrupción pendiente. En lugar de restaurar los registros desde el *stack* para luego nuevamente apilarlos, el procesador saltea estos pasos y directamente entra en el *exception handler*/ISR de la excepción/interrupción pendiente lo antes posible, reduciendo considerablemente el tiempo entre dos *exception handlers*. El *tail chaining* también hace al sistema más eficiente, ya que reduce el número de accesos al *stack*, y cada transferencia de memoria consume energía.
 + **Late arrival:** Cuando ocurre una excepción/interrupción, el procesador acepta la solicitud de excepción/interrupción y comienza la operación de "apilar" (*stacking*). Si durante este momento otra excepción/interrupción de mayor prioridad tiene lugar, la excepción/interrupción de mayor prioridad de "llegada tardía" (*late arrival*) será atendida primero.
+## 18. ¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?
+Los procesadores Cortex-M poseen un pequeño temporizador (*timer*) integrado llamado *SysTick timer* (de *System Tick timer*). Está integrado en la NVIC del procesador, de manera que pueda generar la excepción *SysTick* (*SysTick exception*). El SysTick es un contador de 24 bits decremental, y puede correr tanto a la frecuencia del procesador como con otra fuente de referencia, normalmente *on-chip*.  
+El *SysTick timer* es de suma importancia para sistemas operativos embebidos, debido a que una interrupción periódica es mandatoria para asegurar que el *kernel* sea invocado de manera precisa y regular para, por ejemplo, poder gestionar la ejecución de tareas y el cambio de contexto.  
+La portabilidad de dichos sistemas operativos embebidos se ve favorecida por el *SysTick timer*, ya que al está integrado dentro del procesador, siendo el *SysTick timer* el mismo entre distintos microcontroladores cuyos procesadores sean un Cortex-M3/M4. Es decir, un OS usado en un microcontrolador con Cortex-M3/M4 puede ser reutilizado por otro microncontrolador con Cortex-M3/M4.
+## 19. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
+## 20. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
+## 21. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo.
+## 22. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
+# ISA
+-----
+## 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo.
+## 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo.
+## 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
+## 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
+## 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.

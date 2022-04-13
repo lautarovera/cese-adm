@@ -196,6 +196,9 @@ int main(void)
   asm_productoEscalar16(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 2u);
   asm_productoEscalar12(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 1500u);
 
+  // DWT->CTRL |= 1 << DWT_CTRL_CYCCNTENA_Pos;
+  // DWT->CYCCNT;
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
