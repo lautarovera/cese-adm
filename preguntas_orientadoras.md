@@ -131,8 +131,20 @@ Los procesadores Cortex-M poseen un pequeño temporizador (*timer*) integrado ll
 El *SysTick timer* es de suma importancia para sistemas operativos embebidos, debido a que una interrupción periódica es mandatoria para asegurar que el *kernel* sea invocado de manera precisa y regular para, por ejemplo, poder gestionar la ejecución de tareas y el cambio de contexto.  
 La portabilidad de dichos sistemas operativos embebidos se ve favorecida por el *SysTick timer*, ya que al está integrado dentro del procesador, siendo el *SysTick timer* el mismo entre distintos microcontroladores cuyos procesadores sean un Cortex-M3/M4. Es decir, un OS usado en un microcontrolador con Cortex-M3/M4 puede ser reutilizado por otro microncontrolador con Cortex-M3/M4.
 ## 19. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
+La MPU es una funcionalidad opcional que los procesadores Cortex-M3/M4 soportan, es decir, algunos microcontroladores la incluyen y otros no.  
+Es un dispositivo programable que se utiliza para definir los permisos de acceso (acceso privilegiado o acceso total) y atributos (búfer o caché) para diferentes regiones de memoria.
+La función de la MPU es hacer a un sistema embebido más robusto y más seguro:  
++ Evita que tareas de usuario corrompan la pila de otras tareas o del propio *kernel*.
++ Evita que tareas con acceso no privilegiado accedan a ciertos periféricos que son críticos para asegurar la fiabilidad del sistema.
++ Evita ataques del tipo *code injection* si se define el espacio de la SRAM como no ejecutable (*eXecute Never*, XN).
 ## 20. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
+La MPU en los Cortex-M3/M4 soportan hasta 8 regiones programables de memoria.  
+En caso de solapamiento de regiones, los permisos y atributos utilizados por la localización de memoria afectada serán los de la región cuya numeración sea la más alta.  
+El acceso a zonas de memoria que no son parte de las regiones definidas causará una violación de las reglas de acceso definidas por la MPU, y disparará un *MemManage fault* (*Memory Management Fault*) si la excepción está activada. En su defecto, disparará una *Hard Fault*.
 ## 21. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo.
+La excepción PendSV (*Pended Service Call*) se suele utilizar para la operación de cambio de contexto de los sistemas operativos, ya que evita que el *SysTick* se "apropie" (*preempt*) del contexto cuando una interrupción tuvo lugar justo antes, disparando incluso la excepción *Usage fault* (ingresa al modo Thread cuando una interrupción está activa). Lo que hace el PendSV es retrasar el cambio de contexto hasta que todos los manejadores de las interrupciones hayan completado su ejecución. Para lograr esto, el PendSV se programa para que sea la excepción de menor prioridad.  
+Por ejemplo, se relaciona con la excepción SVC cuando existe un cambio de tarea en un OS: una tarea A llama a SVC, el OS atiende la solicitud de SVC, y pone el estado de PendSV en *pending*. Cuando la ejecución de SVC se completa, inmediatamente entra PendSV y ejecuta el cambio de contexto. Al finalizar PendSV, se regresa al estado Thread y se ejecuta la tarea B.  
+Lo mismo sucede si una interrupción tiene lugar y antes de que se complete la ejecución de su ISR el *SysTick timer* se apropia de la CPU: el OS al atender el *SysTick* pone el estado de PendSV en *pending*, haciendo que cuando la excepción del *SysTick* termine, se retorne a la ISR. Finalmente cuando la ISR se completa, el PendSV tiene lugar y realiza las operaciones de cambio de contexto.
 ## 22. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
 # ISA
 -----
