@@ -157,6 +157,15 @@ Existen tres tipos principales de sufijos:
 + **Sufijos de ejecución condicional**: Se utilizan para controlar el flujo del programa mediante saltos condicionales. Algunos ejemplos comunes de estos sufijos son EQ (*equal*), NE (*not equal*), LT (*less than*), GT (*greater than*), entre otros. Un ejemplo en UAL sería: BEQ label (salta hacia la etiqueta "label" si la instrucción anterior resulta igual o no).
 + **Sufijos de precisión**: Se utilizan en las instruciones de procesamiento de datos para indicar cuantos bits de precisión se deben utilizar en la operación. Algunos ejemplos son .N (de *narrow*, 16 bits) y .W (*wide*, 32 bits). En *assembly* de Cortex-M, existen 3 tipos de datos, *byte* (8 bits), *halfword* (16 bits) y *word* (32 bits). El sufijo H es un "alias" del sufijo .N. Un ejemplo de utilización del sufijo en UAL sería: LDRH R4,R3 (cargar media palabra, 16 bits, del registro R3 en el registro R4.
 ## 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo.
+El sufijo S puede ser utilizado opcionalmente por las instrucciones de procesamiento de datos (e.g. MOV, STR, LDR). Su función es actualizar las banderas (*flags*) del registro APSR (*Application Program Status Register*).  
+Por ejemplo:
+	SUBS R2, R1 (Sustrae el contenido de R1 del contenido de R2, lo coloca en R2 y actualiza el APSR, si el resultado fuera cero, la bandera Z se pondría a 1)
 ## 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
+Las instrucciones de aritmética saturada previenen la distorsión de los resultados de las operaciones ariméticas por desbordamiento (*overflow*). De esta manera, el resultado de una instrucción de aritmética saturada que supere el límite de la precisión en bits utilizada no desbordará, sino que quedará fijo con el valor máximo.  
+Por ejemplo:
+	LDRB R4, R0 (Carga un byte del contenido de la dirección de memoria de R0 en R4)
+	LDRB R5, R1 (Carga un byte del contenido de la dirección de memoria de R1 en R5)
+	SUM  R5, R4 (Suma el contenido de R1 y el contenido de R2 y lo coloca en R2)
+	USAT R5, #8 (Satura el contenido de R2 a 8 bits)
 ## 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
 ## 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.
