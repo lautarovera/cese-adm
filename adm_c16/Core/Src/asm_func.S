@@ -9,6 +9,7 @@
 .global asm_productoEscalar32
 .global asm_productoEscalar16
 .global asm_productoEscalar12
+.global asm_productoEscalar12Sat
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -130,5 +131,30 @@
     	strh r5, [r1], 2
     	subs r2, 1
     	bne .asm_productoEscalar12_loop
+    	pop {r4-r6}
+    	bx lr
+
+ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_productoEscalar12Sat(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
+@
+@ Parametros recibidos:
+@   r0: vectorIn
+@	r1: vectorOut
+@   r2: longitud
+@	r3: escalar
+@
+.thumb_func
+    asm_productoEscalar12Sat:
+    	push {r4-r6}
+    	mov r6, 0xFFF
+    .asm_productoEscalar12Sat_loop:
+    	ldrh r4, [r0], 2
+    	ldrh r5, [r1]
+    	mul r5, r4, r3
+    	usat r5, 12, r5
+    	strh r5, [r1], 2
+    	subs r2, 1
+    	bne .asm_productoEscalar12Sat_loop
     	pop {r4-r6}
     	bx lr

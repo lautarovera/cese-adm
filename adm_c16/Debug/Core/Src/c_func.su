@@ -4,3 +4,9 @@
 ../Core/Src/c_func.c:53:6:productoEscalar32	24	static
 ../Core/Src/c_func.c:60:6:productoEscalar16	24	static
 ../Core/Src/c_func.c:67:6:productoEscalar12	24	static
+../Core/Src/c_func.c:74:6:productoEscalar12Sat	32	static
+../Core/Src/c_func.c:84:6:filtroVentana10	40	static
+../Core/Src/c_func.c:102:6:pack32to16	24	static
+../Core/Src/c_func.c:109:9:max	24	static
+../Core/Src/c_func.c:120:6:downsampleN	32	static
+../Core/Src/c_func.c:130:6:invertir	24	static

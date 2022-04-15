@@ -29,56 +29,77 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef enum {
+	ZEROS,
+	PRO_ESC_32,
+	PRO_ESC_16,
+	PRO_ESC_12,
+	FIL_VEN_10,
+	PCK_32_16,
+	MAX,
+	DOWNSAMPLE,
+	INVERTIR,
+	MAX_FUNC_NUM
+} func_index_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define LENGTH_BUFFER_MSG		25u
+#define LENGTH_BUFFER_UART		80u
 #define LENGTH_BUFFER_IN_OUT	5u
+#define MAX_FUNCTION_NUMBER		9u
+#define DWT_ENABLE				1u
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#ifdef DWT_ENABLE
+	#if DWT_ENABLE == 1u
+		#define DWT_START()				(DWT->CYCCNT = 0u)
+		#define DWT_STOP()				({uint32_t retval; retval = DWT->CYCCNT; retval;})
+	#else
+		#define DWT_START()
+		#define DWT_STOP()
+	#endif
+#endif
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
+/* USER CODE BEGIN PV */
 ETH_TxPacketConfig TxConfig;
 ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptors */
 ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
 
- ETH_HandleTypeDef heth;
-
+ETH_HandleTypeDef heth;
 UART_HandleTypeDef huart3;
-
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
-/* USER CODE BEGIN PV */
-
+const char *func_names[MAX_FUNCTION_NUMBER] = {
+		"zeros            ",
+		"productoEscalar32",
+		"productoEscalar16",
+		"productoEscalar12",
+		"filtroVentana10  ",
+		"pack32to16       ",
+		"max              ",
+		"downsampleN      ",
+		"invertir         "
+};
+char buffer_uart[LENGTH_BUFFER_UART];
+uint32_t buffer_zeros[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+uint32_t buffer_in_32[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
+uint32_t buffer_out_32[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
+uint16_t buffer_in_16[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
+uint16_t buffer_out_16[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
-/* USER CODE BEGIN PFP */
-
-char buffer[LENGTH_BUFFER_MSG];
-
-uint32_t buffer_zeros[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-
-uint32_t buffer_in_32[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
-
-uint32_t buffer_out_32[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
-
-uint16_t buffer_in_16[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
-
-uint16_t buffer_out_16[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -145,69 +166,148 @@ static void PrivilegiosSVC (void)
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
+	uint32_t res = 0u;
+	volatile uint32_t clang_cyc_cnt[MAX_FUNCTION_NUMBER];
+	volatile uint32_t assembly_cyc_cnt[MAX_FUNCTION_NUMBER];
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_ETH_Init();
-  MX_USART3_UART_Init();
-  MX_USB_OTG_FS_PCD_Init();
-  /* USER CODE BEGIN 2 */
-  PrivilegiosSVC ();
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_ETH_Init();
+	MX_USART3_UART_Init();
+	MX_USB_OTG_FS_PCD_Init();
+	/* Habilita y activa el DWT */
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+	CoreDebug->DEMCR |= 1ul << CoreDebug_DEMCR_MON_EN_Pos;
+	ITM->LAR = 0xC5ACCE55;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
-  const uint32_t Resultado = asm_sum (5, 3);
-  /* USER CODE END 2 */
+	/* USER CODE BEGIN 2 */
+	/*********************************************************************
+	 * Warm Up
+	 *********************************************************************/
+	#ifdef DWT_ENABLE
+		#if DWT_ENABLE != 1u
+			PrivilegiosSVC();
+		#endif
+	#endif
+	res = asm_sum(5, 3);
 
-  sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
-  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
+	/*********************************************************************
+	 * 1) Función "zeros": benchmark C vs assembly
+	 *********************************************************************/
+	DWT_START();
+	zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
+	clang_cyc_cnt[ZEROS] = DWT_STOP();
 
-  zeros(buffer_zeros, (uint32_t)LENGTH_BUFFER_IN_OUT);
-  productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER_IN_OUT, 5u);
-  productoEscalar16(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER_IN_OUT, 2u);
-  productoEscalar12(buffer_in_16, buffer_out_16, (uint16_t)LENGTH_BUFFER_IN_OUT, 1024u);
+	asignarEscalar32(buffer_zeros, LENGTH_BUFFER_IN_OUT, 0xFFFFFFFF);
 
-  sprintf( buffer, "asm_sum(5,3) = %lu\r\n", (uint32_t)Resultado );
-  HAL_UART_Transmit( &huart3, (uint8_t *)buffer, (uint16_t) strlen((char *)buffer), 10u );
+	DWT_START();
+	asm_zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
+	assembly_cyc_cnt[ZEROS] = DWT_STOP();
 
-  asignarEscalar32(buffer_zeros, (uint32_t)LENGTH_BUFFER_IN_OUT, (uint32_t)0xFFFFFFFF);
-  asignarEscalar32(buffer_in_32, (uint32_t)LENGTH_BUFFER_IN_OUT, (uint32_t)5u);
-  asignarEscalar16(buffer_in_16, (uint16_t)LENGTH_BUFFER_IN_OUT, (uint16_t)3u);
+	/*********************************************************************
+	 * 2) Función "productoEscalar32": benchmark C vs assembly
+	 *********************************************************************/
+	DWT_START();
+	productoEscalar32(buffer_in_32, buffer_out_32, LENGTH_BUFFER_IN_OUT, 5u);
+	clang_cyc_cnt[PRO_ESC_32] = DWT_STOP();
 
-  asm_zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
-  asm_productoEscalar32(buffer_in_32, buffer_out_32, (uint32_t)LENGTH_BUFFER_IN_OUT, 5u);
-  asm_productoEscalar16(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 2u);
-  asm_productoEscalar12(buffer_in_16, buffer_out_16, (uint32_t)LENGTH_BUFFER_IN_OUT, 1500u);
+	memset(buffer_out_32, 0, sizeof(buffer_out_32));
 
-  // DWT->CTRL |= 1 << DWT_CTRL_CYCCNTENA_Pos;
-  // DWT->CYCCNT;
+	DWT_START();
+	asm_productoEscalar32(buffer_in_32, buffer_out_32, LENGTH_BUFFER_IN_OUT, 5u);
+	assembly_cyc_cnt[PRO_ESC_32] = DWT_STOP();
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+	/*********************************************************************
+	 * 3) Función "productoEscalar16": benchmark C vs assembly
+	 *********************************************************************/
+	DWT_START();
+	productoEscalar16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 2u);
+	clang_cyc_cnt[PRO_ESC_16] = DWT_STOP();
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	asm_productoEscalar16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 2u);
+	assembly_cyc_cnt[PRO_ESC_16] = DWT_STOP();
+
+	/*********************************************************************
+	 * 4) Función "productoEscalar12": benchmark C vs assembly
+	 *********************************************************************/
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	productoEscalar12(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	asm_productoEscalar12(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	/*********************************************************************
+	 * 4-b) Función "productoEscalar12Sat": benchmark C vs assembly
+	 *********************************************************************/
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	asm_productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	/*********************************************************************
+	 * Prints
+	 *********************************************************************/
+	sprintf( buffer_uart, "Arquitectura de Microprocesadores - Guia de ejercicios\r\n\n" );
+	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
+	sprintf( buffer_uart, "Warm Up!\tasm_sum(5,3) = %lu\r\n\n", (uint32_t)res );
+	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
+	sprintf( buffer_uart, "Benchmark Ciclos C vs Assembly\r\n\nFuncion          \tC\tAssembly\r\n" );
+	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
+	sprintf( buffer_uart, "----------------------------------------\r\n" );
+	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
+
+	for (func_index_t func_index = ZEROS; func_index < FIL_VEN_10; func_index++) {
+		sprintf( buffer_uart, "%s\t%ld\t%ld\r\n", func_names[func_index], clang_cyc_cnt[func_index], assembly_cyc_cnt[func_index] );
+		HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
+	}
+
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	while (1)
+	{
+	/* USER CODE END WHILE */
+
+	/* USER CODE BEGIN 3 */
+	}
+	/* USER CODE END 3 */
 }
 
 /**
