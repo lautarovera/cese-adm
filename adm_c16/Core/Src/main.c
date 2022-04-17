@@ -46,9 +46,10 @@ typedef enum {
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define LENGTH_BUFFER_UART		80u
-#define LENGTH_BUFFER_IN_OUT	5u
+#define LENGTH_BUFFER_IN_OUT	20u
 #define MAX_FUNCTION_NUMBER		9u
 #define DWT_ENABLE				1u
+#define USE_FULL_ASSERT			1u
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,6 +62,12 @@ typedef enum {
 		#define DWT_START()
 		#define DWT_STOP()
 	#endif
+#endif
+
+void assert_failed(uint32_t line, uint32_t x, uint32_t y);
+
+#ifdef USE_FULL_ASSERT
+	#define ASSERT(x,y) 				if(x != y) {assert_failed(__LINE__, x, y);}
 #endif
 /* USER CODE END PM */
 
@@ -86,11 +93,15 @@ const char *func_names[MAX_FUNCTION_NUMBER] = {
 		"invertir         "
 };
 char buffer_uart[LENGTH_BUFFER_UART];
-uint32_t buffer_zeros[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-uint32_t buffer_in_32[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
-uint32_t buffer_out_32[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
-uint16_t buffer_in_16[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u};
-uint16_t buffer_out_16[LENGTH_BUFFER_IN_OUT] = {0u, 0u, 0u ,0u ,0u};
+uint32_t buffer_zeros[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFFu};
+uint32_t buffer_in_32[LENGTH_BUFFER_IN_OUT] = {5u, 3u, 16u, 255u, 65535u, 5u, 3u, 16u, 255u, 65535u, 5u, 3u, 16u, 255u, 65535u, 5u, 3u, 16u, 255u, 65535u};
+uint32_t buffer_out_32[LENGTH_BUFFER_IN_OUT] = {0u};
+uint16_t buffer_in_16[LENGTH_BUFFER_IN_OUT] = {0xFFFFu, 0xFFF0u, 0xFF00, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u};
+uint16_t buffer_out_16[LENGTH_BUFFER_IN_OUT] = {0u};
+int32_t buffer_in_s32[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFFu, 0xFFF0u, 0xFF00, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 10u};
+int32_t buffer_out_s32[LENGTH_BUFFER_IN_OUT] = {0u};
+int16_t buffer_in_s16[LENGTH_BUFFER_IN_OUT] = {0xFFFFu, 0xFFF0u, 0xFF00, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u, 0xFFFFu, 0xFFF0u, 0xFF00u, 0xF000u, 0x0000u};
+int16_t buffer_out_s16[LENGTH_BUFFER_IN_OUT] = {0u};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -218,11 +229,19 @@ int main(void)
 	zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
 	clang_cyc_cnt[ZEROS] = DWT_STOP();
 
+	for(uint32_t i = 0u; i < LENGTH_BUFFER_IN_OUT; i++) {
+		ASSERT(buffer_zeros[0u], 0u);
+	}
+
 	asignarEscalar32(buffer_zeros, LENGTH_BUFFER_IN_OUT, 0xFFFFFFFF);
 
 	DWT_START();
 	asm_zeros(buffer_zeros, LENGTH_BUFFER_IN_OUT);
 	assembly_cyc_cnt[ZEROS] = DWT_STOP();
+
+	for(uint32_t i = 0u; i < LENGTH_BUFFER_IN_OUT; i++) {
+		ASSERT(buffer_zeros[0u], 0u);
+	}
 
 	/*********************************************************************
 	 * 2) Función "productoEscalar32": benchmark C vs assembly
@@ -231,11 +250,15 @@ int main(void)
 	productoEscalar32(buffer_in_32, buffer_out_32, LENGTH_BUFFER_IN_OUT, 5u);
 	clang_cyc_cnt[PRO_ESC_32] = DWT_STOP();
 
+	ASSERT(buffer_out_32[0u], 25u);
+
 	memset(buffer_out_32, 0, sizeof(buffer_out_32));
 
 	DWT_START();
 	asm_productoEscalar32(buffer_in_32, buffer_out_32, LENGTH_BUFFER_IN_OUT, 5u);
 	assembly_cyc_cnt[PRO_ESC_32] = DWT_STOP();
+
+	ASSERT(buffer_out_32[0u], 25u);
 
 	/*********************************************************************
 	 * 3) Función "productoEscalar16": benchmark C vs assembly
@@ -244,11 +267,15 @@ int main(void)
 	productoEscalar16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 2u);
 	clang_cyc_cnt[PRO_ESC_16] = DWT_STOP();
 
+	ASSERT(buffer_out_16[LENGTH_BUFFER_IN_OUT - 1u], 10u);
+
 	memset(buffer_out_16, 0, sizeof(buffer_out_16));
 
 	DWT_START();
 	asm_productoEscalar16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 2u);
 	assembly_cyc_cnt[PRO_ESC_16] = DWT_STOP();
+
+	ASSERT(buffer_out_16[LENGTH_BUFFER_IN_OUT - 1u], 10u);
 
 	/*********************************************************************
 	 * 4) Función "productoEscalar12": benchmark C vs assembly
@@ -259,11 +286,14 @@ int main(void)
 	productoEscalar12(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
 	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
 
+	ASSERT(buffer_out_16[LENGTH_BUFFER_IN_OUT - 1u], 1024u);
 	memset(buffer_out_16, 0, sizeof(buffer_out_16));
 
 	DWT_START();
 	asm_productoEscalar12(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
 	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(buffer_out_16[LENGTH_BUFFER_IN_OUT - 1u], 1024u);
 
 	/*********************************************************************
 	 * 4-b) Función "productoEscalar12Sat": benchmark C vs assembly
@@ -274,26 +304,121 @@ int main(void)
 	productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
 	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
 
+	ASSERT(buffer_out_16[0u], 4095u);
+
 	memset(buffer_out_16, 0, sizeof(buffer_out_16));
 
 	DWT_START();
 	asm_productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
 	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
 
+	ASSERT(buffer_out_16[0u], 4095u);
+
+	/*********************************************************************
+	 * 5) Función "filtroVentana10": benchmark C vs assembly
+	 *********************************************************************/
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+	DWT_START();
+	filtroVentana10(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(buffer_out_16[0u], 51555u);
+
+	memset(buffer_out_16, 0, sizeof(buffer_out_16));
+
+//	DWT_START();
+//	asm_filtroVentana10(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+//	ASSERT(buffer_out_16[0u], 51555u);
+
+	/*********************************************************************
+	 * 6) Función "pack32to16": benchmark C vs assembly
+	 *********************************************************************/
+
+	DWT_START();
+	pack32to16(buffer_in_s32, buffer_out_s16, LENGTH_BUFFER_IN_OUT);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(buffer_out_s16[0u], (int16_t)0xFFFFu);
+
+	memset(buffer_out_s16, 0, sizeof(buffer_out_s16));
+
+//	DWT_START();
+//	asm_pack32to16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
+//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+//	ASSERT(buffer_out_s16[0u], 0xFFFFu);
+
+	/*********************************************************************
+	 * 7) Función "max": benchmark C vs assembly
+	 *********************************************************************/
+
+	DWT_START();
+	int32_t max_res = max(buffer_in_s32, LENGTH_BUFFER_IN_OUT);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(max_res, (int32_t)65535);
+
+//	DWT_START();
+//	int32_t max_res = asm_max(buffer_in_s32, LENGTH_BUFFER_IN_OUT);
+//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+//	ASSERT(max_res, 0xFFFFFFFFu);
+
+	/*********************************************************************
+	 * 8) Función "downsampleN": benchmark C vs assembly
+	 *********************************************************************/
+
+	memset(buffer_out_s32, 0, sizeof(buffer_out_s32));
+
+	DWT_START();
+	downsampleN(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 6u);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
+	ASSERT(buffer_out_s32[6u], buffer_in_s32[7u]);
+
+	memset(buffer_out_s32, 0, sizeof(buffer_out_s32));
+
+//	DWT_START();
+//	asm_downsampleN(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 5u);
+//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+//	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
+//	ASSERT(buffer_out_s32[4u], buffer_in_s32[5u]);
+
+	/*********************************************************************
+	 * 9) Función "invertir": benchmark C vs assembly
+	 *********************************************************************/
+
+	DWT_START();
+	invertir(buffer_in_16, LENGTH_BUFFER_IN_OUT);
+	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+	ASSERT(buffer_in_16[LENGTH_BUFFER_IN_OUT - 1], 0xFFFFu);
+
+//	DWT_START();
+//	asm_invertir(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 5u);
+//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+
+//	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
+
 	/*********************************************************************
 	 * Prints
 	 *********************************************************************/
-	sprintf( buffer_uart, "Arquitectura de Microprocesadores - Guia de ejercicios\r\n\n" );
+ 	sprintf( buffer_uart, "Arquitectura de Microprocesadores - Guia de ejercicios\r\n\n" );
 	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
 	sprintf( buffer_uart, "Warm Up!\tasm_sum(5,3) = %lu\r\n\n", (uint32_t)res );
 	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
-	sprintf( buffer_uart, "Benchmark Ciclos C vs Assembly\r\n\nFuncion          \tC\tAssembly\r\n" );
+	sprintf( buffer_uart, "Benchmark Ciclos C vs Assembly\r\n\nFuncion\t\t\t\tC\t     Assembly\r\n" );
 	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
-	sprintf( buffer_uart, "----------------------------------------\r\n" );
+	sprintf( buffer_uart, "------------------------------------------------------\r\n" );
 	HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
 
-	for (func_index_t func_index = ZEROS; func_index < FIL_VEN_10; func_index++) {
-		sprintf( buffer_uart, "%s\t%ld\t%ld\r\n", func_names[func_index], clang_cyc_cnt[func_index], assembly_cyc_cnt[func_index] );
+	for (func_index_t func_index = ZEROS; func_index < MAX_FUNC_NUM; func_index++) {
+		sprintf( buffer_uart, "%s\t%10ld\t\%10ld\r\n", func_names[func_index], clang_cyc_cnt[func_index], assembly_cyc_cnt[func_index] );
 		HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
 	}
 
@@ -550,11 +675,12 @@ void Error_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t *file, uint32_t line)
+void assert_failed(uint32_t line, uint32_t x, uint32_t y)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* User can add his own implementation to report the file name and line number */
+     sprintf(buffer_uart, "Error en la funcion de la linea %ld: deberia retornar %lX, en cambio retorna %lX\r\n", (line - 3u), y, x);
+     HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

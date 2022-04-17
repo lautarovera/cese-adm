@@ -1,0 +1,30 @@
+!SESSION 2022-04-16 12:23:28.677 -----------------------------------------------
+eclipse.buildId=Version 1.9.0
+java.version=11.0.11
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2022-04-16 12:23:38.220
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2022-04-16 12:23:38.291
+!MESSAGE Log4j initialized with config file /home/lautaro/CESE/2_Bimestre/ADM/cese-adm/adm_c16/.metadata/.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2022-04-16 12:23:40.654
+!MESSAGE Started RMI Server, listening on port 41338
+!SESSION 2022-04-17 19:01:47.741 -----------------------------------------------
+eclipse.buildId=Version 1.9.0
+java.version=11.0.11
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2022-04-17 19:01:57.294
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2022-04-17 19:01:57.367
+!MESSAGE Log4j initialized with config file /home/lautaro/CESE/2_Bimestre/ADM/cese-adm/adm_c16/.metadata/.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2022-04-17 19:01:59.881
+!MESSAGE Started RMI Server, listening on port 41338

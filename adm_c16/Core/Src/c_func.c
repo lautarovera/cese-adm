@@ -83,18 +83,19 @@ void productoEscalar12Sat(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t long
 
 void filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud)
 {
-	uint16_t res = 0u;
-	uint32_t filt_pos;
+	uint32_t res = 0u;
+	uint16_t *init_pos = vectorIn;
+	uint16_t *filt_pos = init_pos;
 	uint32_t l = longitud;
 
 	while (l--) {
-		filt_pos = (uint32_t)vectorIn % ((uint32_t)&vectorIn[0u] + longitud);
+		filt_pos = (filt_pos > (init_pos + longitud)) ? init_pos : filt_pos;
 		res += *vectorIn++;
 
-		if ((uint32_t)vectorIn >= (filt_pos + 10u)) {
+		if (vectorIn >= (filt_pos + 10u)) {
 			res /= 10u;
-			*vectorOut++ = res;
-			vectorIn = (uint16_t *)filt_pos + 1u;
+			*vectorOut++ = (uint16_t)res;
+			vectorIn = ++filt_pos;
 		}
 	}
 }
@@ -112,6 +113,7 @@ int32_t max(int32_t *vectorIn, uint32_t longitud)
 
 	while (longitud--) {
 		max = (*vectorIn > max) ? *vectorIn : max;
+		vectorIn++;
 	}
 
 	return max;
@@ -122,17 +124,30 @@ void downsampleN(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint3
 	uint32_t n = 0u;
 
 	while (longitud--) {
-		*vectorOut++ = (n++ < 10) ? *vectorIn++ : *(vectorIn + 2u);
-		n %= N;
+		if (n++ < N) {
+			*vectorOut++ = *vectorIn++;
+		}
+		else {
+			n = 0u;
+			vectorIn++;
+		}
 	}
 }
 
 void invertir(uint16_t *vectorIn, uint32_t longitud)
 {
-	uint16_t invertido = 0u;
+	uint32_t n = longitud;
+	uint16_t tmp[longitud];
+	uint16_t *tmp_ptr = &tmp[0u];
 
-	while (longitud--) {
-		invertido = *(vectorIn + longitud);
-		*vectorIn++ = invertido;
+	while (n--) {
+		*tmp_ptr++ = vectorIn[n];
+	}
+
+	n = longitud;
+	tmp_ptr = &tmp[0u];
+
+	while (n--) {
+		*vectorIn++ = *tmp_ptr++;
 	}
 }
