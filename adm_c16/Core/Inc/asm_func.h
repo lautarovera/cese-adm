@@ -51,3 +51,12 @@ void asm_productoEscalar12(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t lon
  * @param[in]  escalar   : Escalar como operando del producto
  */
 void asm_productoEscalar12Sat(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
+
+/**
+ * @brief Función que implementa un filtro de ventana móvil de 10 valores sobre un vector de muestras,
+ * haciendo rollover cuando la ventana supera el extremo del vector de entrada.
+ * @param[in]  vectorIn  : Vector de muestras.
+ * @param[out] vectorOut : Vector resultado del filtro de ventana, su longitud debe ser mayor o igual a longitudVectorIn.
+ * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
+ */
+void asm_filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud);

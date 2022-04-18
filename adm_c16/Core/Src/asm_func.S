@@ -10,6 +10,7 @@
 .global asm_productoEscalar16
 .global asm_productoEscalar12
 .global asm_productoEscalar12Sat
+.global asm_filtroVentana10
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -134,7 +135,7 @@
     	pop {r4-r6}
     	bx lr
 
- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
 @   void asm_productoEscalar12Sat(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud, uint16_t escalar);
 @
@@ -157,4 +158,57 @@
     	subs r2, 1
     	bne .asm_productoEscalar12Sat_loop
     	pop {r4-r6}
+    	bx lr
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t longitud);
+@
+@ Parametros recibidos:
+@   r0: vectorIn
+@	r1: vectorOut
+@   r2: longitud
+@
+.thumb_func
+    asm_filtroVentana10:
+    	push {r3-r9}
+    	mov r3, r0				@ init_pos	-> r3
+    	mov r4, r0				@ filt_pos	-> r4
+    	mov r5, r2				@ l			-> r5
+    	mov r6, 0				@ res		-> r6
+    .asm_filtroVentana10_loop:
+    	add r7, r3, r2			@ r6 = init_pos + longitud
+    	cmp r4, r6				@ if (filt_pos >= longitud)
+    	movhs r4, r3			@ filt_pos = init_pos
+    	ldrh r8, [r0], 2		@ r7 = *vectorIn++;
+    	add r6, r8				@ res += r7
+    	add r9, r4, 10			@ r8 = filt_pos + 10
+    	cmp r0, r9				@ if (vectorIn >= (filt_pos + 10u))
+    	udiv r6, r6, 10			@ res /= 10
+    	strh r6, [r1], 2		@ *vectorOut++ = res;
+    	add r4, 2				@ filt_pos++
+    	mov r0, r4				@ vectorIn = filt_pos
+    	subs r5, 1				@ l--
+    	bne .asm_filtroVentana10_loop
+    	pop {r3-r9}
+    	bx lr
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_pack32to16(int32_t *vectorIn, int16_t *vectorOut, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: vectorIn
+@	r1: vectorOut
+@   r2: longitud
+@
+.thumb_func
+    asm_pack32to16:
+    .asm_pack32to16_loop:
+    	ldr r3, [r0], 2
+    	lsr r3, r3, 16
+    	strh r3, [r1], 2
+    	subs r2, 1
+    	bne .asm_pack32to16_loop
     	bx lr
