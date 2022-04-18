@@ -60,3 +60,37 @@ void asm_productoEscalar12Sat(uint16_t *vectorIn, uint16_t *vectorOut, uint16_t 
  * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
  */
 void asm_filtroVentana10(uint16_t *vectorIn, uint16_t *vectorOut, uint32_t longitud);
+
+/**
+ * @brief Función que recibe un vector de muestras signadas de 32 bits y los empaqueta en otro vector
+ * de 16 bits.
+ * @param[in]  vectorIn  : Vector de muestras.
+ * @param[out] vectorOut : Vector resultado del empaquetado.
+ * @param[in]  longitud	 : Longitud del vector de entrada y del vector resultado.
+ */
+void asm_pack32to16(int32_t *vectorIn, int16_t *vectorOut, uint32_t longitud);
+
+/**
+ * @brief Función que recibe un vector de muestras signadas de 32 bits y devuelve la posición del máximo
+ * del vector.
+ * @param[in]  vectorIn  : Vector de muestras.
+ * @param[in]  longitud  : Longitud del vector de entrada.
+ */
+int32_t asm_max(int32_t *vectorIn, uint32_t longitud);
+
+/**
+ * @brief Función que recibe un vector de muestras signadas de 32 bits y lo decima descartando
+ * una de cada N muestras.
+ * @param[in]  vectorIn  : Vector de muestras.
+ * @param[out] vectorOut : Vector resultado de la decimación.
+ * @param[in]  longitud  : Longitud del vector de entrada y del vector resultado.
+ * @param[in]  N		 : Frecuencia de decimación.
+ */
+void asm_downsampleN(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N);
+
+/**
+ * @brief Función que recibe un vector de muestras no signadas e invierte su orden.
+ * @param[in]  vectorIn : Vector de muestras.
+ * @param[in]  longitud : Longitud del vector de entrada.
+ */
+void asm_invertir(uint16_t *vectorIn, uint32_t longitud);

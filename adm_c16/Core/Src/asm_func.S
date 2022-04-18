@@ -82,6 +82,8 @@
 .thumb_func
     asm_productoEscalar32:
     	push {r4,r5}
+    	mov r4, 0
+    	mov r5, 0
     .asm_productoEscalar32_loop:
     	ldr r4, [r0], 4
     	mul r5, r4, r3
@@ -104,6 +106,8 @@
 .thumb_func
     asm_productoEscalar16:
     	push {r4,r5}
+    	mov r4, 0
+    	mov r5, 0
     .asm_productoEscalar16_loop:
     	ldrh r4, [r0], 2
     	ldrh r5, [r1]
@@ -127,6 +131,8 @@
 .thumb_func
     asm_productoEscalar12:
     	push {r4-r6}
+    	mov r4, 0
+    	mov r5, 0
     	mov r6, 0xFFF
     .asm_productoEscalar12_loop:
     	ldrh r4, [r0], 2
@@ -152,6 +158,8 @@
 .thumb_func
     asm_productoEscalar12Sat:
     	push {r4-r6}
+    	mov r4, 0
+    	mov r5, 0
     	mov r6, 0xFFF
     .asm_productoEscalar12Sat_loop:
     	ldrh r4, [r0], 2
@@ -175,30 +183,25 @@
 @
 .thumb_func
     asm_filtroVentana10:
-    	push {r4-r9}
-    	mov r3, r0				@ init_pos	-> r3
-    	mov r4, r0				@ filt_pos	-> r4
-    	mov r5, r2				@ l			-> r5
-    	mov r6, 0				@ res		-> r6
-    	mov r7, 0
-    	mov r8, 0
-    	mov r9, 10
+    	push {r4-r6}
+    	mov r4, 0						@ r4 = 0
+    	mov r5, 20						@ r5 = 10
+    	mov r6, 10						@ r6 = 10
     .asm_filtroVentana10_loop:
-    	add r7, r3, r2			@ r6 = init_pos + longitud
-    	cmp r4, r6				@ if (filt_pos >= longitud)
-    	it hs
-    	movhs r4, r3			@ filt_pos = init_pos
-    	ldrh r8, [r0], 2		@ r8 = *vectorIn++;
-    	add r6, r8				@ res += r8
-    	add r9, r4, 10			@ r9 = filt_pos + 10
-    	cmp r0, r9				@ if (vectorIn >= (filt_pos + 10u))
-    	udiv r6, r6, r9			@ res /= 10
-    	strh r6, [r1], 2		@ *vectorOut++ = res;
-    	add r4, 2				@ filt_pos++
-    	mov r0, r4				@ vectorIn = filt_pos
-    	subs r5, 1				@ l--
-    	bne .asm_filtroVentana10_loop
-    	pop {r4-r9}
+    .asm_promedio_loop:
+    	ldrh r3, [r0, r5]				@ r3 = *(vectorIn + r5)
+    	add r4, r3						@ r4 += r3
+    	subs r5, 2						@ r5--
+    	bne .asm_promedio_loop			@ if (r5 == 0)
+    	ldrh r3, [r0], 2				@ r3 = *vectorIn++
+    	add r4, r3						@ r4 += r3
+    	udiv r4, r4, r6					@ r4 = r4 / r6
+    	strh r4, [r1], 2				@ *r1++ = r4
+    	mov r4, 0						@ r4 = 0
+    	mov r5, 20						@ r5 = 20
+    	subs r2, 1						@ longitud--
+    	bne .asm_filtroVentana10_loop	@ if (longitud == 0)
+    	pop {r4-r6}
     	bx lr
 
 
@@ -223,7 +226,7 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
-@   void asm_max(int32_t *vectorIn, uint32_t longitud);
+@   int32_t asm_max(int32_t *vectorIn, uint32_t longitud);
 @
 @ Parametros recibidos:
 @   r0: vectorIn
@@ -239,6 +242,7 @@
     	movgt r2, r3
     	subs r1, 1
     	bne .asm_max_loop
+    	mov r0, r2
     	bx lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -255,6 +259,7 @@
     asm_downsampleN:
     	push {r4-r5}
     	mov r4, 0
+    	mov r5, 0
     .asm_downsampleN_loop:
 		add r4, 1
 		ldr r5, [r0], 4
@@ -277,13 +282,18 @@
 @
 .thumb_func
     asm_invertir:
-    	mov r2, 0				@ tmp = 0u;
-    	mov r3, 0
+    	push {r4}
+   		mov r2, 2
+   		mov r3, 0
+   		mov r4, 0
+   		mul r2, r2, r1
+   		add r2, r0, r2
     .asm_invertir_loop:
-		ldrh r2, [r0]			@ tmp = *r0
-		ldrh r3, [r0, r1]		@ r3 = *(vectorIn + longitud)
-		strh r3, [r0]			@ *r0 = r3
-		strh r2, [r0, r1]		@ *(vectorIn + longitud) = tmp
-    	subs r1, 1
+		ldrh r3, [r0]
+		ldrh r4, [r2]
+		strh r4, [r0], 2
+		strh r3, [r2], -2
+    	cmp r0, r2
     	bne .asm_invertir_loop
+    	pop {r4}
     	bx lr

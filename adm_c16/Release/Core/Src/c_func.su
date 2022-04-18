@@ -1,0 +1,12 @@
+../Core/Src/c_func.c:32:6:asignarEscalar32	8	static
+../Core/Src/c_func.c:39:6:asignarEscalar16	8	static
+../Core/Src/c_func.c:46:6:zeros	0	static
+../Core/Src/c_func.c:53:6:productoEscalar32	0	static
+../Core/Src/c_func.c:60:6:productoEscalar16	0	static
+../Core/Src/c_func.c:67:6:productoEscalar12	0	static
+../Core/Src/c_func.c:74:6:productoEscalar12Sat	4	static
+../Core/Src/c_func.c:84:6:filtroVentana10	28	static
+../Core/Src/c_func.c:103:6:pack32to16	0	static
+../Core/Src/c_func.c:110:9:max	0	static
+../Core/Src/c_func.c:122:6:downsampleN	4	static
+../Core/Src/c_func.c:137:6:invertir	8	static

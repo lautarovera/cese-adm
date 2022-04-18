@@ -151,12 +151,12 @@ void invertir(uint16_t *vectorIn, uint32_t longitud)
 //		*vectorIn++ = *tmp_ptr++;
 //	}
 	uint16_t tmp = 0u;
-	uint32_t i = 0u;
 
-	while (longitud--) {
-		tmp = vectorIn[i];
-		vectorIn[i] = vectorIn[longitud - 1];
-		vectorIn[longitud - 1] = tmp;
-		i++;
+	for (uint32_t l = 0u, h = (longitud - 1u); l < h; l++, h--)
+	{
+		tmp = vectorIn[l];
+		vectorIn[l] = vectorIn[h];
+		vectorIn[h] = tmp;
 	}
+
 }

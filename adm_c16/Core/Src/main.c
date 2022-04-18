@@ -34,6 +34,7 @@ typedef enum {
 	PRO_ESC_32,
 	PRO_ESC_16,
 	PRO_ESC_12,
+	PRO_ESC_12_SAT,
 	FIL_VEN_10,
 	PCK_32_16,
 	MAX,
@@ -47,7 +48,6 @@ typedef enum {
 /* USER CODE BEGIN PD */
 #define LENGTH_BUFFER_UART		80u
 #define LENGTH_BUFFER_IN_OUT	20u
-#define MAX_FUNCTION_NUMBER		9u
 #define DWT_ENABLE				1u
 #define USE_FULL_ASSERT			1u
 /* USER CODE END PD */
@@ -81,16 +81,17 @@ ETH_HandleTypeDef heth;
 UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
-const char *func_names[MAX_FUNCTION_NUMBER] = {
-		"zeros            ",
-		"productoEscalar32",
-		"productoEscalar16",
-		"productoEscalar12",
-		"filtroVentana10  ",
-		"pack32to16       ",
-		"max              ",
-		"downsampleN      ",
-		"invertir         "
+const char *func_names[MAX_FUNC_NUM] = {
+		"zeros               ",
+		"productoEscalar32   ",
+		"productoEscalar16   ",
+		"productoEscalar12   ",
+		"productoEscalar12Sat",
+		"filtroVentana10     ",
+		"pack32to16          ",
+		"max                 ",
+		"downsampleN         ",
+		"invertir            "
 };
 char buffer_uart[LENGTH_BUFFER_UART];
 uint32_t buffer_zeros[LENGTH_BUFFER_IN_OUT] = {0xFFFFFFFFu};
@@ -179,8 +180,8 @@ int main(void)
 {
 	/* USER CODE BEGIN 1 */
 	uint32_t res = 0u;
-	volatile uint32_t clang_cyc_cnt[MAX_FUNCTION_NUMBER];
-	volatile uint32_t assembly_cyc_cnt[MAX_FUNCTION_NUMBER];
+	volatile uint32_t clang_cyc_cnt[MAX_FUNC_NUM];
+	volatile uint32_t assembly_cyc_cnt[MAX_FUNC_NUM];
 
 	/* USER CODE END 1 */
 
@@ -302,7 +303,7 @@ int main(void)
 
 	DWT_START();
 	productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[PRO_ESC_12_SAT] = DWT_STOP();
 
 	ASSERT(buffer_out_16[0u], 4095u);
 
@@ -310,7 +311,7 @@ int main(void)
 
 	DWT_START();
 	asm_productoEscalar12Sat(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
-	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	assembly_cyc_cnt[PRO_ESC_12_SAT] = DWT_STOP();
 
 	ASSERT(buffer_out_16[0u], 4095u);
 
@@ -321,17 +322,17 @@ int main(void)
 
 	DWT_START();
 	filtroVentana10(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[FIL_VEN_10] = DWT_STOP();
 
 	ASSERT(buffer_out_16[0u], 51555u);
 
 	memset(buffer_out_16, 0, sizeof(buffer_out_16));
 
-//	DWT_START();
-//	asm_filtroVentana10(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
-//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	DWT_START();
+	asm_filtroVentana10(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT);
+	assembly_cyc_cnt[FIL_VEN_10] = DWT_STOP();
 
-//	ASSERT(buffer_out_16[0u], 51555u);
+	ASSERT(buffer_out_16[0u], 51555u);
 
 	/*********************************************************************
 	 * 6) Función "pack32to16": benchmark C vs assembly
@@ -339,17 +340,17 @@ int main(void)
 
 	DWT_START();
 	pack32to16(buffer_in_s32, buffer_out_s16, LENGTH_BUFFER_IN_OUT);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[PCK_32_16] = DWT_STOP();
 
 	ASSERT(buffer_out_s16[0u], (int16_t)0xFFFFu);
 
 	memset(buffer_out_s16, 0, sizeof(buffer_out_s16));
 
-//	DWT_START();
-//	asm_pack32to16(buffer_in_16, buffer_out_16, LENGTH_BUFFER_IN_OUT, 1024u);
-//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	DWT_START();
+	asm_pack32to16(buffer_in_s32, buffer_out_s16, LENGTH_BUFFER_IN_OUT);
+	assembly_cyc_cnt[PCK_32_16] = DWT_STOP();
 
-//	ASSERT(buffer_out_s16[0u], 0xFFFFu);
+	ASSERT(buffer_out_s16[0u], (int16_t)0xFFFFu);
 
 	/*********************************************************************
 	 * 7) Función "max": benchmark C vs assembly
@@ -357,15 +358,15 @@ int main(void)
 
 	DWT_START();
 	int32_t max_res = max(buffer_in_s32, LENGTH_BUFFER_IN_OUT);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[MAX] = DWT_STOP();
 
 	ASSERT(max_res, (int32_t)65535);
 
-//	DWT_START();
-//	int32_t max_res = asm_max(buffer_in_s32, LENGTH_BUFFER_IN_OUT);
-//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	DWT_START();
+	max_res = asm_max(buffer_in_s32, LENGTH_BUFFER_IN_OUT);
+	assembly_cyc_cnt[MAX] = DWT_STOP();
 
-//	ASSERT(max_res, 0xFFFFFFFFu);
+	ASSERT(max_res, (int32_t)65535);
 
 	/*********************************************************************
 	 * 8) Función "downsampleN": benchmark C vs assembly
@@ -375,19 +376,19 @@ int main(void)
 
 	DWT_START();
 	downsampleN(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 6u);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[DOWNSAMPLE] = DWT_STOP();
 
 	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
 	ASSERT(buffer_out_s32[6u], buffer_in_s32[7u]);
 
 	memset(buffer_out_s32, 0, sizeof(buffer_out_s32));
 
-//	DWT_START();
-//	asm_downsampleN(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 5u);
-//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	DWT_START();
+	asm_downsampleN(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 6u);
+	assembly_cyc_cnt[DOWNSAMPLE] = DWT_STOP();
 
-//	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
-//	ASSERT(buffer_out_s32[4u], buffer_in_s32[5u]);
+	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
+	ASSERT(buffer_out_s32[6u], buffer_in_s32[7u]);
 
 	/*********************************************************************
 	 * 9) Función "invertir": benchmark C vs assembly
@@ -395,15 +396,15 @@ int main(void)
 
 	DWT_START();
 	invertir(buffer_in_16, LENGTH_BUFFER_IN_OUT);
-	clang_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	clang_cyc_cnt[INVERTIR] = DWT_STOP();
 
 	ASSERT(buffer_in_16[LENGTH_BUFFER_IN_OUT - 1], 0xFFFFu);
 
-//	DWT_START();
-//	asm_invertir(buffer_in_s32, buffer_out_s32, LENGTH_BUFFER_IN_OUT, 5u);
-//	assembly_cyc_cnt[PRO_ESC_12] = DWT_STOP();
+	DWT_START();
+	asm_invertir(buffer_in_16, LENGTH_BUFFER_IN_OUT);
+	assembly_cyc_cnt[INVERTIR] = DWT_STOP();
 
-//	ASSERT(buffer_out_s32[3u], buffer_in_s32[3u]);
+	ASSERT(buffer_in_16[0u], 0xFFFFu);
 
 	/*********************************************************************
 	 * Prints
@@ -679,7 +680,7 @@ void assert_failed(uint32_t line, uint32_t x, uint32_t y)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number */
-     sprintf(buffer_uart, "Error en la funcion de la linea %ld: deberia retornar %lX, en cambio retorna %lX\r\n", (line - 3u), y, x);
+     sprintf(buffer_uart, "Error linea %ld: se espera %lX, devuelve %lX\r\n", (line - 3u), y, x);
      HAL_UART_Transmit( &huart3, (uint8_t *)buffer_uart, (uint16_t) strlen((char *)buffer_uart), 10u );
   /* USER CODE END 6 */
 }
