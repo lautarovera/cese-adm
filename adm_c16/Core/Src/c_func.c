@@ -136,18 +136,27 @@ void downsampleN(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint3
 
 void invertir(uint16_t *vectorIn, uint32_t longitud)
 {
-	uint32_t n = longitud;
-	uint16_t tmp[longitud];
-	uint16_t *tmp_ptr = &tmp[0u];
+//	uint32_t n = longitud;
+//	uint16_t tmp[longitud];
+//	uint16_t *tmp_ptr = &tmp[0u];
+//
+//	while (n--) {
+//		*tmp_ptr++ = vectorIn[n];
+//	}
+//
+//	n = longitud;
+//	tmp_ptr = &tmp[0u];
+//
+//	while (n--) {
+//		*vectorIn++ = *tmp_ptr++;
+//	}
+	uint16_t tmp = 0u;
+	uint32_t i = 0u;
 
-	while (n--) {
-		*tmp_ptr++ = vectorIn[n];
-	}
-
-	n = longitud;
-	tmp_ptr = &tmp[0u];
-
-	while (n--) {
-		*vectorIn++ = *tmp_ptr++;
+	while (longitud--) {
+		tmp = vectorIn[i];
+		vectorIn[i] = vectorIn[longitud - 1];
+		vectorIn[longitud - 1] = tmp;
+		i++;
 	}
 }
